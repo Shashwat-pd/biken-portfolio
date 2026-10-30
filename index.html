@@ -1,0 +1,2319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biken Karki — Film Editor & Visual Storyteller</title>
+<meta name="description" content="Biken Karki — filmmaker and editor based in Kathmandu. Films, documentaries, music videos, and commercials.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Biken Karki — Film Editor &amp; Visual Storyteller">
+<meta property="og:description" content="Biken Karki — filmmaker and editor based in Kathmandu. Films, documentaries, music videos, and commercials.">
+<meta name="theme-color" content="#0a0a09">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎬%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Syne:wght@400;700;800&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cream: #F2EDE4;
+    --black: #0A0A09;
+    --ash: #1A1916;
+    --ember: #C8522A;
+    --gold: #B8955A;
+    --mist: #8C8880;
+    --light-mist: #D4CEBD;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Syne', sans-serif;
+    --mono: 'Space Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: var(--serif);
+    font-weight: 300;
+    cursor: none;
+    overflow-x: hidden;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed;
+    width: 10px; height: 10px;
+    background: var(--ember);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(200,82,42,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.18s ease-out, width 0.3s, height 0.3s, opacity 0.3s;
+  }
+  body:hover .cursor-ring { opacity: 1; }
+
+  /* NOISE GRAIN OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 9000;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 4rem;
+    mix-blend-mode: normal;
+  }
+  .nav-logo {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--cream);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 3rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mist);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--cream); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 4rem;
+    overflow: hidden;
+  }
+
+  .hero-reel {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  /* Cinematic film strip animation */
+  .film-strip {
+    position: absolute;
+    inset: 0;
+    background: var(--black);
+  }
+
+  .film-cells {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 2px;
+    opacity: 0.18;
+    animation: filmShift 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes filmShift {
+    0% { transform: scale(1.05) translateX(-1%); }
+    100% { transform: scale(1.08) translateX(1%); }
+  }
+
+  .film-cell {
+    background: #1a1916;
+    position: relative;
+    overflow: hidden;
+  }
+  .film-cell::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #2a2520 0%, #0d0c0a 100%);
+  }
+  .film-cell:nth-child(1) { background: #1e1200; }
+  .film-cell:nth-child(3) { background: #180a00; }
+  .film-cell:nth-child(5) { background: #0d0d12; }
+  .film-cell:nth-child(7) { background: #12100e; }
+  .film-cell:nth-child(9) { background: #1a0e08; }
+  .film-cell:nth-child(11) { background: #0e1218; }
+  .film-cell:nth-child(14) { background: #180a00; }
+  .film-cell:nth-child(16) { background: #1e1200; }
+
+  /* Himalayan silhouette */
+  .himalaya-silhouette {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    height: 45%;
+    z-index: 1;
+  }
+
+  .hero-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(10,10,9,0) 0%,
+      rgba(10,10,9,0.3) 50%,
+      rgba(10,10,9,0.92) 80%,
+      rgba(10,10,9,1) 100%
+    );
+    z-index: 2;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 3;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.5s forwards;
+  }
+
+  .hero-title {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(4rem, 9vw, 9rem);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 1.2s 0.8s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    opacity: 0;
+    animation: fadeUp 1s 1.2s forwards;
+  }
+
+  .hero-sub p {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--mist);
+    text-transform: uppercase;
+  }
+
+  .hero-line {
+    width: 60px;
+    height: 1px;
+    background: var(--ember);
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    right: 4rem;
+    bottom: 4rem;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeIn 1s 2s forwards;
+  }
+
+  .scroll-indicator span {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mist);
+    writing-mode: vertical-rl;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--mist), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { transform: scaleY(1); opacity: 0.5; }
+    50% { transform: scaleY(0.6); opacity: 1; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* REEL TICKER */
+  .reel-ticker {
+    background: var(--ember);
+    padding: 0.75rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .ticker-inner {
+    display: inline-flex;
+    gap: 0;
+    animation: ticker 30s linear infinite;
+  }
+
+  .ticker-item {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--black);
+    padding: 0 3rem;
+  }
+
+  .ticker-separator {
+    color: rgba(10,10,9,0.4);
+  }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* SECTIONS */
+  section { padding: 8rem 4rem; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 1.08rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 4rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .section-label::before {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--ember);
+  }
+
+  /* ABOUT */
+  .about {
+    display: block;
+    background: var(--ash);
+    padding: 6.5rem 8rem 6rem;
+  }
+  .about .section-label { margin-bottom: 3.5rem; }
+
+  .about-intro {
+    text-align: left;
+    max-width: 54rem;
+  }
+
+  .about-lead {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    line-height: 1.8;
+    font-weight: 400;
+    color: var(--light-mist);
+    letter-spacing: 0;
+    margin: 0;
+  }
+  .about-lead em { font-style: normal; color: inherit; }
+  .about-intro .cta-btn { margin-top: 2.2rem; }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+    margin-top: 4.5rem;
+  }
+
+  .stat-box {
+    border-top: 1px solid rgba(242,237,228,0.14);
+    padding: 1.8rem 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+    text-align: left;
+    transition: border-color 0.3s;
+    position: relative;
+  }
+  .stat-box::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 0;
+    width: 3rem; height: 1px;
+    background: var(--ember);
+    transition: width 0.4s;
+  }
+  .stat-box:hover::before { width: 100%; }
+
+  .stat-number {
+    font-family: var(--serif);
+    font-size: 2.6rem;
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1;
+    margin: 0;
+  }
+  .stat-number span { color: var(--cream); font-size: inherit; }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin: 0;
+  }
+
+  @media (max-width: 900px) {
+    .about { padding: 5rem 1.5rem 4rem; }
+    .about-lead { font-size: 1.2rem; }
+    .about-stats { grid-template-columns: 1fr; gap: 2rem; margin-top: 3.5rem; }
+  }
+
+  /* WORK / PROJECTS */
+  .work { background: var(--black); }
+
+  .work-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 5rem;
+  }
+
+  .work-title {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(3rem, 5vw, 5rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .work-title em { font-style: italic; color: var(--gold); }
+
+  .view-all {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mist);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: color 0.3s;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(140,136,128,0.3);
+  }
+  .view-all:hover { color: var(--cream); }
+
+  /* Project grid */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .project-card {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16/10;
+    background: var(--ash);
+    cursor: none;
+  }
+
+  .project-card.large {
+    aspect-ratio: 16/10;
+  }
+
+  .project-bg {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .project-card:hover .project-bg {
+    transform: scale(1.05);
+  }
+
+  /* Cinematic placeholder backgrounds */
+  .bg-mountains {
+    background:
+      linear-gradient(180deg, #1a3a5c 0%, #0d1f35 30%, #261506 70%, #120b03 100%);
+  }
+  .bg-city {
+    background:
+      linear-gradient(180deg, #0d0d1a 0%, #1a0d2e 40%, #2a1a00 80%, #0a0805 100%);
+  }
+  .bg-portrait {
+    background:
+      linear-gradient(135deg, #1a0a00 0%, #3d1a00 50%, #0a0805 100%);
+  }
+  .bg-brand {
+    background:
+      linear-gradient(160deg, #001a1a 0%, #003333 40%, #000d00 100%);
+  }
+  .bg-doc {
+    background:
+      linear-gradient(180deg, #0d0d0d 0%, #1a1206 40%, #2a1a00 100%);
+  }
+
+  /* Abstract film frame shapes */
+  .project-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .bg-mountains::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 55%;
+    background: linear-gradient(180deg, transparent, #0d1f3599);
+    clip-path: polygon(0 40%, 15% 20%, 30% 35%, 45% 10%, 60% 25%, 75% 5%, 90% 20%, 100% 10%, 100% 100%, 0 100%);
+    background-color: #0a1520;
+    opacity: 0.9;
+  }
+
+  .bg-city::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 70%;
+    clip-path: polygon(0 60%, 8% 50%, 12% 30%, 16% 50%, 20% 45%, 24% 20%, 28% 45%, 35% 55%, 40% 35%, 44% 30%, 48% 50%, 55% 40%, 60% 55%, 68% 30%, 75% 50%, 80% 35%, 85% 50%, 92% 45%, 100% 55%, 100% 100%, 0 100%);
+    background: #0a0518;
+    opacity: 0.85;
+  }
+
+  .project-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(10,10,9,0.95) 0%,
+      rgba(10,10,9,0.4) 40%,
+      rgba(10,10,9,0) 70%
+    );
+    z-index: 1;
+  }
+
+  .project-info {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 2.5rem;
+    z-index: 2;
+    transform: translateY(2px);
+    transition: transform 0.4s;
+  }
+
+  .project-card:hover .project-info { transform: translateY(-4px); }
+
+  .project-type {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 0.6rem;
+  }
+
+  .project-name {
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+
+  .project-card.large .project-name { font-size: 1.8rem; }
+
+  .project-meta {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--mist);
+    letter-spacing: 0.1em;
+  }
+
+  .project-card:hover .project-play {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .project-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    width: 64px; height: 64px;
+    border: 1px solid rgba(242,237,228,0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s, transform 0.4s;
+    z-index: 2;
+  }
+
+  .project-play::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 0 8px 16px;
+    border-color: transparent transparent transparent var(--cream);
+    margin-left: 4px;
+  }
+
+  /* SERVICES */
+  .services {
+    background: var(--ash);
+    padding: 8rem;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 4rem;
+  }
+
+  .service-item {
+    background: var(--black);
+    padding: 3rem;
+    border: 1px solid rgba(255,255,255,0.03);
+    transition: border-color 0.4s, transform 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-item::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 2px;
+    background: var(--ember);
+    transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .service-item:hover::before { width: 100%; }
+  .service-item:hover { border-color: rgba(200,82,42,0.2); }
+
+  .service-num {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--ember);
+    letter-spacing: 0.2em;
+    margin-bottom: 2rem;
+  }
+
+  .service-title {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin-bottom: 1.2rem;
+    letter-spacing: -0.01em;
+  }
+
+  .service-desc {
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: var(--mist);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+  }
+
+  /* CLIENTS */
+  .clients {
+    background: var(--black);
+    padding: 6rem 4rem;
+    text-align: center;
+  }
+
+  .clients-label {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 3rem;
+  }
+
+  .clients-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .client-item {
+    padding: 2rem 1rem;
+    border: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.3s;
+  }
+  .client-item:hover { border-color: rgba(200,82,42,0.3); }
+
+  .client-name {
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mist);
+    transition: color 0.3s;
+  }
+  .client-item:hover .client-name { color: var(--cream); }
+
+  /* PROCESS */
+  .process {
+    background: var(--black);
+    padding: 8rem 4rem;
+  }
+
+  .process-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 6rem;
+    align-items: center;
+  }
+
+  .process-title {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(2.5rem, 4vw, 4rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .process-title em { font-style: italic; color: var(--gold); }
+
+  .process-intro {
+    font-size: 1rem;
+    line-height: 1.9;
+    color: var(--light-mist);
+  }
+
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+  }
+
+  .process-step {
+    background: var(--ash);
+    padding: 3rem 2.5rem;
+    position: relative;
+  }
+
+  .step-number {
+    font-family: var(--serif);
+    font-size: 4rem;
+    font-weight: 300;
+    color: rgba(200,82,42,0.15);
+    line-height: 1;
+    margin-bottom: 1.5rem;
+  }
+
+  .step-title {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    color: var(--cream);
+  }
+
+  .step-desc {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    line-height: 1.8;
+    color: var(--mist);
+    letter-spacing: 0.03em;
+  }
+
+  /* TESTIMONIAL */
+  .testimonial {
+    background: var(--ember);
+    padding: 8rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .testimonial::before {
+    content: '"';
+    position: absolute;
+    top: -2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--serif);
+    font-size: 20rem;
+    line-height: 1;
+    color: rgba(10,10,9,0.08);
+    pointer-events: none;
+  }
+
+  .testimonial-quote {
+    font-family: var(--serif);
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--black);
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .testimonial-author {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(10,10,9,0.6);
+  }
+
+  /* CONTACT */
+  .contact {
+    background: var(--black);
+    padding: 10rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-bg-text {
+    position: absolute;
+    bottom: -2rem;
+    left: -1rem;
+    font-family: var(--serif);
+    font-size: 20vw;
+    font-weight: 300;
+    color: rgba(255,255,255,0.02);
+    pointer-events: none;
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  .contact-inner {
+    max-width: 700px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .contact-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 2rem;
+  }
+
+  .contact-title {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(3rem, 6vw, 6rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 3rem;
+  }
+
+  .contact-title em { font-style: italic; color: var(--gold); }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    text-decoration: none;
+    color: var(--cream);
+    transition: padding-left 0.4s;
+    group: true;
+  }
+
+  .contact-link:hover { padding-left: 1rem; }
+
+  .contact-link-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 0.25rem;
+  }
+
+  .contact-link-value {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    font-weight: 300;
+  }
+
+  .contact-link-arrow {
+    font-family: var(--mono);
+    font-size: 1.2rem;
+    color: var(--ember);
+    transition: transform 0.3s;
+  }
+  .contact-link:hover .contact-link-arrow { transform: translateX(6px); }
+
+  /* CTA Button */
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 2.5rem;
+    border: 1px solid var(--cream);
+    color: var(--cream);
+    text-decoration: none;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    transition: background 0.3s, color 0.3s;
+    margin-top: 3rem;
+    cursor: none;
+  }
+  .cta-btn:hover {
+    background: var(--cream);
+    color: var(--black);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--ash);
+    padding: 3rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .footer-logo {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--cream);
+  }
+
+  .footer-copy {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--mist);
+    letter-spacing: 0.1em;
+  }
+
+  .footer-socials {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .footer-socials a {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mist);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .footer-socials a:hover { color: var(--ember); }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Horizontal scroll text */
+  .scroll-text-section {
+    overflow: hidden;
+    padding: 4rem 0;
+    background: var(--ash);
+    border-top: 1px solid rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .scroll-text-track {
+    display: flex;
+    white-space: nowrap;
+    animation: scrollText 25s linear infinite;
+  }
+
+  .scroll-text-track.reverse { animation-direction: reverse; }
+
+  .scroll-text-item {
+    font-family: var(--serif);
+    font-size: clamp(3rem, 5vw, 5rem);
+    font-weight: 300;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(242,237,228,0.2);
+    padding: 0 2rem;
+    letter-spacing: -0.01em;
+    flex-shrink: 0;
+  }
+
+  .scroll-text-item.filled {
+    color: var(--cream);
+    -webkit-text-stroke: none;
+  }
+
+  @keyframes scrollText {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* Nepal origin badge */
+  .origin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 1rem;
+    border: 1px solid rgba(200,82,42,0.4);
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .origin-flag {
+    font-size: 1rem;
+  }
+
+  .origin-text {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mist);
+  }
+
+  /* LIGHTBOX */
+  .lightbox-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    z-index: 8000;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+  }
+  .lightbox-backdrop.active { display: flex; }
+
+  .lightbox-inner {
+    position: relative;
+    width: 90vw;
+    max-width: 1100px;
+    aspect-ratio: 16/9;
+  }
+
+  .lightbox-inner iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: -3rem;
+    right: 0;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--mist);
+    background: none;
+    border: none;
+    cursor: none;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .lightbox-close:hover { color: var(--cream); }
+
+  .project-card[data-video] { cursor: none; }
+
+  /* Cinematic bars */
+  .letterbox-top, .letterbox-bottom {
+    position: fixed;
+    left: 0; right: 0;
+    height: 0;
+    background: var(--black);
+    z-index: 50;
+    transition: height 0.8s cubic-bezier(0.77, 0, 0.18, 1);
+  }
+  .letterbox-top { top: 0; }
+  .letterbox-bottom { bottom: 0; }
+  .letterbox-top.open, .letterbox-bottom.open { height: 60px; }
+</style>
+</head>
+<body>
+
+<!-- Cinematic letterbox bars -->
+<div class="letterbox-top open" id="ltop"></div>
+<div class="letterbox-bottom open" id="lbottom"></div>
+
+<!-- Video Lightbox -->
+<div class="lightbox-backdrop" id="lightbox">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" onclick="closeLightbox()">✕ &nbsp;Close</button>
+    <iframe id="lightbox-iframe" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+  </div>
+</div>
+
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Navigation -->
+<nav>
+  <a href="#" class="nav-logo">Biken Karki</a>
+  <ul class="nav-links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#current">In Progress</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-reel">
+    <div class="film-strip">
+      <div class="film-cells">
+        <div class="film-cell"></div><div class="film-cell"></div><div class="film-cell"></div>
+        <div class="film-cell"></div><div class="film-cell"></div><div class="film-cell"></div>
+        <div class="film-cell"></div><div class="film-cell"></div><div class="film-cell"></div>
+        <div class="film-cell"></div><div class="film-cell"></div><div class="film-cell"></div>
+        <div class="film-cell"></div><div class="film-cell"></div><div class="film-cell"></div>
+        <div class="film-cell"></div><div class="film-cell"></div><div class="film-cell"></div>
+      </div>
+    </div>
+
+    <!-- Himalayan SVG Silhouette -->
+    <svg class="himalaya-silhouette" viewBox="0 0 1440 400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="himGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1a2a3a" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#0a0a09" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="snowGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#c8d4e0" stop-opacity="0.8"/>
+          <stop offset="30%" stop-color="#8a9bb0" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#1a2a3a" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <!-- Background ridge -->
+      <path d="M0,400 L0,280 L80,260 L150,290 L220,240 L290,250 L380,200 L460,220 L530,170 L600,190 L670,150 L740,160 L810,130 L880,145 L950,110 L1020,125 L1100,100 L1170,120 L1240,95 L1320,115 L1380,90 L1440,105 L1440,400 Z" fill="#1a2535" opacity="0.5"/>
+      <!-- Mid peaks -->
+      <path d="M0,400 L0,320 L100,300 L180,310 L260,270 L340,280 L420,240 L500,250 L580,210 L650,225 L720,185 L800,200 L880,165 L950,175 L1030,140 L1120,155 L1200,130 L1280,145 L1360,120 L1440,135 L1440,400 Z" fill="#0f1d2e" opacity="0.7"/>
+      <!-- Foreground -->
+      <path d="M0,400 L0,350 L120,330 L200,340 L300,310 L400,325 L500,295 L580,305 L660,280 L740,290 L820,270 L900,278 L980,258 L1060,265 L1140,248 L1220,255 L1300,240 L1380,248 L1440,235 L1440,400 Z" fill="#0a0a09"/>
+      <!-- Snow caps -->
+      <path d="M950,110 L930,140 L960,145 L970,120 Z" fill="#d4dde8" opacity="0.5"/>
+      <path d="M1100,100 L1080,125 L1110,128 L1120,108 Z" fill="#d4dde8" opacity="0.5"/>
+      <path d="M1240,95 L1220,118 L1252,122 L1258,100 Z" fill="#d4dde8" opacity="0.5"/>
+      <path d="M670,150 L652,175 L678,180 L686,158 Z" fill="#c8d4e0" opacity="0.4"/>
+    </svg>
+  </div>
+  <div class="hero-gradient"></div>
+
+  <div class="hero-content">
+    <div class="origin-badge">
+      <span class="origin-flag">🇳🇵</span>
+      <span class="origin-text">Kathmandu, Nepal</span>
+    </div>
+    <p class="hero-eyebrow">Film Editor &nbsp;&bull;&nbsp; Visual Storyteller</p>
+    <h1 class="hero-title">
+      Biken<br>
+      <em>Karki</em>
+    </h1>
+    <div class="hero-sub">
+      <div class="hero-line"></div>
+      <p>Cutting stories that can make sense</p>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+
+
+  <div style="position:absolute;inset:0;background:linear-gradient(to right,#080704,transparent 6%,transparent 94%,#080704);pointer-events:none;"></div>
+</div>
+<!-- SECTION DIVIDER -->
+<div style="height:1px;background:linear-gradient(to right,transparent,var(--ember),transparent);opacity:0.4;margin:0;"></div>
+
+<!-- WORK -->
+<section class="work" id="work">
+  <div class="work-header reveal">
+    <h2 class="work-title">Selected<br><em>Work</em></h2>
+    <a href="#" class="view-all">View Full Reel &nbsp;→</a>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;grid-auto-rows:1fr;margin-bottom:12px;">
+    <div style="position:relative;display:flex;flex-direction:column;">
+      <div class="project-card reveal" id="docsCard" onclick="toggleDocs(event)" style="cursor:none;flex:1;">
+        <div class="project-bg bg-mountains"></div>
+        <div class="yt-thumb cycle-thumb" data-thumbs="https://img.youtube.com/vi/aoQ-mhQdpqs/hqdefault.jpg,https://img.youtube.com/vi/cmcXgzE9YuU/hqdefault.jpg"
+          style="position:absolute;inset:0;background-image:url('https://img.youtube.com/vi/aoQ-mhQdpqs/hqdefault.jpg');background-size:cover;background-position:center;transition:opacity 0.8s ease;"></div>
+        <div class="project-overlay" style="pointer-events:none;"></div>
+        <div class="project-info">
+          <p class="project-type">Documentary &nbsp;·&nbsp; Various</p>
+          <h3 class="project-name">Documentaries</h3>
+          <p class="project-meta">2 Films &nbsp;·&nbsp; Click to select</p>
+        </div>
+        <div id="docsArrow" style="position:absolute;top:1.2rem;right:1.2rem;font-family:var(--mono);font-size:0.7rem;color:rgba(242,237,228,0.6);transition:transform 0.4s;">▼</div>
+      </div>
+      <div id="docsDropdown" style="position:absolute;top:100%;left:0;right:0;background:var(--ash);border:1px solid rgba(200,82,42,0.3);border-top:2px solid var(--ember);z-index:50;max-height:0;overflow:hidden;transition:max-height 0.5s cubic-bezier(0.77,0,0.18,1),opacity 0.4s;opacity:0;">
+        <div style="padding:0.5rem 0;">
+          <div class="ep-row" data-vid="aoQ-mhQdpqs" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/aoQ-mhQdpqs/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Documentary · 58 min</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Mother Rebika</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="cmcXgzE9YuU" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/cmcXgzE9YuU/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Documentary · 15 min</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Meet Dayamati</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:relative;display:flex;flex-direction:column;">
+      <div class="project-card reveal" id="teenSpiritCard" onclick="toggleTeenSpirit(event)" style="cursor:none;flex:1;">
+        <div class="project-bg bg-portrait"></div>
+        <div class="yt-thumb cycle-thumb" data-thumbs="https://img.youtube.com/vi/5qhVNNVsqSU/hqdefault.jpg,https://img.youtube.com/vi/rJjMiUcTsfA/hqdefault.jpg,https://img.youtube.com/vi/6J66D12FOC0/hqdefault.jpg,https://img.youtube.com/vi/6rXNAoydF7U/hqdefault.jpg"
+          style="position:absolute;inset:0;background-image:url('https://img.youtube.com/vi/5qhVNNVsqSU/hqdefault.jpg');background-size:cover;background-position:center;transition:opacity 0.8s ease;"></div>
+        <div class="project-overlay" style="pointer-events:none;"></div>
+        <div class="project-info">
+          <p class="project-type">Web Series &nbsp;·&nbsp; 2023</p>
+          <h3 class="project-name">Teen Spirit</h3>
+          <p class="project-meta">4 Episodes &nbsp;·&nbsp; Click to select</p>
+        </div>
+        <div id="teenSpiritArrow" style="position:absolute;top:1.2rem;right:1.2rem;font-family:var(--mono);font-size:0.7rem;color:rgba(242,237,228,0.6);transition:transform 0.4s;">▼</div>
+      </div>
+      <div id="teenSpiritDropdown" style="position:absolute;top:100%;left:0;right:0;background:var(--ash);border:1px solid rgba(200,82,42,0.3);border-top:2px solid var(--ember);z-index:50;max-height:0;overflow:hidden;transition:max-height 0.5s cubic-bezier(0.77,0,0.18,1),opacity 0.4s;opacity:0;">
+        <div style="padding:0.5rem 0;">
+          <div class="ep-row" data-vid="5qhVNNVsqSU" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/5qhVNNVsqSU/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Episode 01</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Teen Spirit</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="rJjMiUcTsfA" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/rJjMiUcTsfA/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Episode 02</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Teen Spirit</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="6J66D12FOC0" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/6J66D12FOC0/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Episode 03</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Teen Spirit</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="6rXNAoydF7U" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/6rXNAoydF7U/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Episode 04</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Teen Spirit</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;grid-auto-rows:1fr;margin-bottom:12px;">
+    <div style="position:relative;display:flex;flex-direction:column;">
+      <div class="project-card reveal" id="musicCard" onclick="toggleMusic(event)" style="cursor:none;flex:1;">
+        <div class="project-bg bg-brand"></div>
+        <div class="yt-thumb cycle-thumb" data-thumbs="https://img.youtube.com/vi/m2Grt8KE77M/hqdefault.jpg,https://img.youtube.com/vi/6OwxfSysyMs/hqdefault.jpg,https://img.youtube.com/vi/F0C0zcpC5rU/hqdefault.jpg,https://img.youtube.com/vi/Yr0Z7c6DrsI/hqdefault.jpg,https://img.youtube.com/vi/NoKZL8sKF1c/hqdefault.jpg,-VcAvKy_TmQ"
+          style="position:absolute;inset:0;background-image:url('https://img.youtube.com/vi/m2Grt8KE77M/hqdefault.jpg');background-size:cover;background-position:center;transition:opacity 0.8s ease;"></div>
+        <div class="project-overlay" style="pointer-events:none;"></div>
+        <div class="project-info">
+          <p class="project-type">Music Video &nbsp;·&nbsp; Various</p>
+          <h3 class="project-name">Music Videos</h3>
+          <p class="project-meta">6 Videos &nbsp;·&nbsp; Click to select</p>
+        </div>
+        <div id="musicArrow" style="position:absolute;top:1.2rem;right:1.2rem;font-family:var(--mono);font-size:0.7rem;color:rgba(242,237,228,0.6);transition:transform 0.4s;">▼</div>
+      </div>
+      <div id="musicDropdown" style="position:absolute;top:100%;left:0;right:0;background:var(--ash);border:1px solid rgba(200,82,42,0.3);border-top:2px solid var(--ember);z-index:50;max-height:0;overflow:hidden;transition:max-height 0.5s cubic-bezier(0.77,0,0.18,1),opacity 0.4s;opacity:0;">
+        <div style="padding:0.5rem 0;">
+          <div class="ep-row" data-vid="m2Grt8KE77M" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/m2Grt8KE77M/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Dir. Pratap Darji</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Purano Kuppi</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="6OwxfSysyMs" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/6OwxfSysyMs/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Dir. Sandesh Bhurtel</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Tmi Bina</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="F0C0zcpC5rU" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/F0C0zcpC5rU/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Dir. Ganesh Tiwari</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Dubdai Chu</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="Yr0Z7c6DrsI" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/Yr0Z7c6DrsI/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Dir. Dhiraj Adhikari</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Yaad Hru</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="NoKZL8sKF1c" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/NoKZL8sKF1c/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Dir. Shrawal R Pandey</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Mc</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="-VcAvKy_TmQ" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/-VcAvKy_TmQ/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Dir. Bhisma Joshi</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Jhyal</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:relative;display:flex;flex-direction:column;">
+      <div class="project-card reveal" id="ueCard" onclick="toggleUE(event)" style="cursor:none;flex:1;">
+        <div class="project-bg bg-doc"></div>
+        <div class="yt-thumb cycle-thumb" data-thumbs="https://img.youtube.com/vi/GldLRgKxsMk/hqdefault.jpg,https://img.youtube.com/vi/0kApVrWqgAE/hqdefault.jpg,https://img.youtube.com/vi/VeC3FWjIR1s/hqdefault.jpg,https://img.youtube.com/vi/063WpMu9zzw/hqdefault.jpg,https://img.youtube.com/vi/eyxaug3Rpw4/hqdefault.jpg,https://img.youtube.com/vi/RM3shta3Fg8/hqdefault.jpg"
+          style="position:absolute;inset:0;background-image:url('https://img.youtube.com/vi/GldLRgKxsMk/hqdefault.jpg');background-size:cover;background-position:center;transition:opacity 0.8s ease;"></div>
+        <div class="project-overlay" style="pointer-events:none;"></div>
+        <div class="project-info">
+          <p class="project-type">Acoustic Music Session</p>
+          <h3 class="project-name">UE Session</h3>
+          <p class="project-meta">6 Sessions &nbsp;·&nbsp; Click to select</p>
+        </div>
+        <div id="ueArrow" style="position:absolute;top:1.2rem;right:1.2rem;font-family:var(--mono);font-size:0.7rem;color:rgba(242,237,228,0.6);transition:transform 0.4s;">▼</div>
+      </div>
+      <div id="ueDropdown" style="position:absolute;top:100%;left:0;right:0;background:var(--ash);border:1px solid rgba(200,82,42,0.3);border-top:2px solid var(--ember);z-index:50;max-height:0;overflow:hidden;transition:max-height 0.5s cubic-bezier(0.77,0,0.18,1),opacity 0.4s;opacity:0;">
+        <div style="padding:0.5rem 0;">
+          <div class="ep-row" data-vid="GldLRgKxsMk" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/GldLRgKxsMk/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Episode 01</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Acoustic Music Session</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="0kApVrWqgAE" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/0kApVrWqgAE/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Episode 02</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Acoustic Music Session</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="VeC3FWjIR1s" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/VeC3FWjIR1s/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Episode 03</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Acoustic Music Session</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="063WpMu9zzw" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/063WpMu9zzw/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Episode 04</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Acoustic Music Session</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="eyxaug3Rpw4" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/eyxaug3Rpw4/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Episode 05</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Acoustic Music Session</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="RM3shta3Fg8" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/RM3shta3Fg8/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Episode 06</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Acoustic Music Session</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;grid-auto-rows:1fr;margin-bottom:12px;">
+    <div style="position:relative;display:flex;flex-direction:column;">
+      <div class="project-card reveal" id="cinemaCard" onclick="toggleCinema(event)" style="cursor:none;flex:1;">
+        <div class="project-bg bg-city"></div>
+        <div class="yt-thumb cycle-thumb" data-thumbs="https://img.youtube.com/vi/KfocacxSIM8/hqdefault.jpg,https://img.youtube.com/vi/Jt9_GnakXDU/hqdefault.jpg,https://img.youtube.com/vi/HiK3vcYJcO8/hqdefault.jpg,multimedia/perfect-god-still.jpg"
+          style="position:absolute;inset:0;background-image:url('https://img.youtube.com/vi/KfocacxSIM8/hqdefault.jpg');background-size:cover;background-position:center;transition:opacity 0.8s ease;"></div>
+        <div class="project-overlay" style="pointer-events:none;"></div>
+        <div class="project-info">
+          <p class="project-type">Feature Films &nbsp;·&nbsp; Various Roles</p>
+          <h3 class="project-name">Cinema</h3>
+          <p class="project-meta">4 Films &nbsp;·&nbsp; Click to select</p>
+        </div>
+        <div id="cinemaArrow" style="position:absolute;top:1.2rem;right:1.2rem;font-family:var(--mono);font-size:0.7rem;color:rgba(242,237,228,0.6);transition:transform 0.4s;">▼</div>
+      </div>
+      <div id="cinemaDropdown" style="position:absolute;top:100%;left:0;right:0;background:var(--ash);border:1px solid rgba(200,82,42,0.3);border-top:2px solid var(--ember);z-index:50;max-height:0;overflow:hidden;transition:max-height 0.5s cubic-bezier(0.77,0,0.18,1),opacity 0.4s;opacity:0;">
+        <div style="padding:0.5rem 0;">          <div class="ep-row" data-vid="KfocacxSIM8" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/KfocacxSIM8/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Editor &nbsp;·&nbsp; Dir. Nimesh Shrestha</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Life Dyamage</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>
+          <div class="ep-row" data-vid="Jt9_GnakXDU" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/Jt9_GnakXDU/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Data Wrangler &nbsp;·&nbsp; Dir. Kumar Bhaskar</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Kausid</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="HiK3vcYJcO8" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/HiK3vcYJcO8/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Data Wrangler, Lineup Editor &nbsp;·&nbsp; Dir. Ganesh Dev Panday</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Julebi</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div onclick="window.open('https://variety.com/2025/film/news/khyentse-norbu-perfect-god-first-looks-1236446709/','_blank')" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('multimedia/perfect-god-thumb.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Data Wrangler &nbsp;·&nbsp; Dir. Khyentse Norbu</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Perfect God</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">↗</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>
+        </div>
+      </div>
+    </div>
+<div style="position:relative;display:flex;flex-direction:column;">
+      <div class="project-card reveal" id="otherCard" onclick="toggleOther(event)" style="cursor:none;flex:1;">
+        <div class="project-bg bg-city"></div>
+        <div class="yt-thumb cycle-thumb" data-thumbs="https://img.youtube.com/vi/D4SFA1kDY2c/hqdefault.jpg,https://img.youtube.com/vi/d9rar3sI53A/hqdefault.jpg"
+          style="position:absolute;inset:0;background-image:url('https://img.youtube.com/vi/D4SFA1kDY2c/hqdefault.jpg');background-size:cover;background-position:center;transition:opacity 0.8s ease;"></div>
+        <div class="project-overlay" style="pointer-events:none;"></div>
+        <div class="project-info">
+          <p class="project-type">Various Roles</p>
+          <h3 class="project-name">Other Projects</h3>
+          <p class="project-meta">2 Projects &nbsp;·&nbsp; Click to select</p>
+        </div>
+        <div id="otherArrow" style="position:absolute;top:1.2rem;right:1.2rem;font-family:var(--mono);font-size:0.7rem;color:rgba(242,237,228,0.6);transition:transform 0.4s;">▼</div>
+      </div>
+      <div id="otherDropdown" style="position:absolute;top:100%;left:0;right:0;background:var(--ash);border:1px solid rgba(200,82,42,0.3);border-top:2px solid var(--ember);z-index:50;max-height:0;overflow:hidden;transition:max-height 0.5s cubic-bezier(0.77,0,0.18,1),opacity 0.4s;opacity:0;">
+        <div style="padding:0.5rem 0;">          <div class="ep-row" data-vid="D4SFA1kDY2c" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/D4SFA1kDY2c/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Production Manager &nbsp;·&nbsp; Singer: Bikash Khatri</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Pani Paryo Rujhaune</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>          <div class="ep-row" data-vid="d9rar3sI53A" style="display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;cursor:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(200,82,42,0.1)'" onmouseout="this.style.background='transparent'">
+            <div style="width:56px;height:36px;background-image:url('https://img.youtube.com/vi/d9rar3sI53A/hqdefault.jpg');background-size:cover;background-position:center;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <p style="font-family:var(--mono);font-size:0.55rem;color:var(--ember);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.15rem;">Production Manager &nbsp;·&nbsp; Dir. Sandesh Bhurtel</p>
+              <p style="font-family:var(--serif);font-size:0.95rem;color:var(--cream);font-weight:300;">Prarthana</p>
+            </div>
+            <span style="color:var(--ember);font-size:0.8rem;">▶</span>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.05);margin:0 1.2rem;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- WORK END DIVIDER -->
+<div style="height:2px;background:var(--ember);opacity:0.85;"></div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-text reveal">
+    <div class="section-label">About</div>
+    <div class="about-intro">
+      <p class="about-lead">I’m Biken, filmmaker and editor based in Kathmandu, usually somewhere between <em>a timeline, a hard drive, and way too many versions of the same cut.</em> I work across films, documentaries, music videos, and commercials, shaping raw footage into stories that feel right, and actually make sense.</p>
+      <a href="#contact" class="cta-btn">Start a Conversation →</a>
+    </div>
+  </div>
+
+  <div class="about-stats">
+    <div class="stat-box">
+      <div class="stat-number"><span class="count-num" data-target="30" data-suffix="+">1</span></div>
+      <div class="stat-label">Projects Completed</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number"><span class="count-num" data-target="8" data-suffix="+">1</span></div>
+      <div class="stat-label">Years of Experience</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number"><span class="count-num" data-target="18" data-suffix="+">1</span></div>
+      <div class="stat-label">Clients Served</div>
+    </div>
+  </div>
+</section>
+
+<!-- FADE TRANSITION -->
+<div style="height:80px;background:linear-gradient(to bottom,var(--ash),var(--black));margin:0;padding:0;"></div>
+
+<!-- SERVICES -->
+<!-- PHOTOGRAPHY SECTION -->
+<section class="photography" id="photography" style="background:var(--black);padding:6rem 0;">
+  <div style="padding:0 4rem;margin-bottom:3rem;">
+    <div class="section-label reveal" style="margin-bottom:1.2rem;">Through My Lens</div>
+    <h2 class="reveal" style="font-family:var(--serif);font-weight:300;font-size:clamp(2.2rem,3.5vw,4rem);line-height:1.05;letter-spacing:-0.02em;">
+      I also love<br><em style="color:var(--gold);font-style:italic;">taking photos</em>
+    </h2>
+  </div>
+
+  <div style="overflow:hidden;width:100%;position:relative;">
+    <div id="photoStrip" style="
+      display:flex;
+      gap:16px;
+      width:max-content;
+      animation:photoLoop 22s linear infinite;
+    ">
+<div style="flex-shrink:0;width:320px;height:320px;overflow:hidden;position:relative;background:var(--ash);">
+        <img src="multimedia/photo-balloon-seller.jpg" alt="Balloon seller at dusk" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,9,0.8) 0%,transparent 50%);pointer-events:none;"></div>
+        <p style="position:absolute;bottom:1.1rem;left:1.1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(242,237,228,0.8);margin:0;">Kathmandu &nbsp;·&nbsp; Street</p>
+      </div>
+<div style="flex-shrink:0;width:320px;height:320px;overflow:hidden;position:relative;background:var(--ash);">
+        <img src="multimedia/photo-festival-crowd.jpg" alt="Aerial view of festival crowd" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,9,0.8) 0%,transparent 50%);pointer-events:none;"></div>
+        <p style="position:absolute;bottom:1.1rem;left:1.1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(242,237,228,0.8);margin:0;">Kathmandu &nbsp;·&nbsp; Festival</p>
+      </div>
+<div style="flex-shrink:0;width:320px;height:320px;overflow:hidden;position:relative;background:var(--ash);">
+        <img src="multimedia/photo-temple-elder.jpg" alt="Elder at ancient temple" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,9,0.8) 0%,transparent 50%);pointer-events:none;"></div>
+        <p style="position:absolute;bottom:1.1rem;left:1.1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(242,237,228,0.8);margin:0;">Pashupatinath &nbsp;·&nbsp; Temple</p>
+      </div>
+<div style="flex-shrink:0;width:320px;height:320px;overflow:hidden;position:relative;background:var(--ash);">
+        <img src="multimedia/photo-chess-elders.jpg" alt="Two elders playing chess" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,9,0.8) 0%,transparent 50%);pointer-events:none;"></div>
+        <p style="position:absolute;bottom:1.1rem;left:1.1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(242,237,228,0.8);margin:0;">Bhaktapur &nbsp;·&nbsp; Street</p>
+      </div>
+<div style="flex-shrink:0;width:320px;height:320px;overflow:hidden;position:relative;background:var(--ash);">
+        <img src="multimedia/photo-himalayan-reflection.jpg" alt="Himalayan peaks reflected" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,9,0.8) 0%,transparent 50%);pointer-events:none;"></div>
+        <p style="position:absolute;bottom:1.1rem;left:1.1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(242,237,228,0.8);margin:0;">Annapurna &nbsp;·&nbsp; Landscape</p>
+      </div>
+<div style="flex-shrink:0;width:320px;height:320px;overflow:hidden;position:relative;background:var(--ash);">
+        <img src="multimedia/photo-plane-over-city.jpg" alt="Plane over city wires" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,9,0.8) 0%,transparent 50%);pointer-events:none;"></div>
+        <p style="position:absolute;bottom:1.1rem;left:1.1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(242,237,228,0.8);margin:0;">Kathmandu &nbsp;·&nbsp; Urban</p>
+      </div>
+<div style="flex-shrink:0;width:320px;height:320px;overflow:hidden;position:relative;background:var(--ash);">
+        <img src="multimedia/photo-street-mural.jpg" alt="Man before street mural" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,9,0.8) 0%,transparent 50%);pointer-events:none;"></div>
+        <p style="position:absolute;bottom:1.1rem;left:1.1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(242,237,228,0.8);margin:0;">Kathmandu &nbsp;·&nbsp; Street</p>
+      </div>
+<div style="flex-shrink:0;width:320px;height:320px;overflow:hidden;position:relative;background:var(--ash);">
+        <img src="multimedia/photo-balloon-seller.jpg" alt="Balloon seller at dusk" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,9,0.8) 0%,transparent 50%);pointer-events:none;"></div>
+        <p style="position:absolute;bottom:1.1rem;left:1.1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(242,237,228,0.8);margin:0;">Kathmandu &nbsp;·&nbsp; Street</p>
+      </div>
+<div style="flex-shrink:0;width:320px;height:320px;overflow:hidden;position:relative;background:var(--ash);">
+        <img src="multimedia/photo-festival-crowd.jpg" alt="Aerial view of festival crowd" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,9,0.8) 0%,transparent 50%);pointer-events:none;"></div>
+        <p style="position:absolute;bottom:1.1rem;left:1.1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(242,237,228,0.8);margin:0;">Kathmandu &nbsp;·&nbsp; Festival</p>
+      </div>
+<div style="flex-shrink:0;width:320px;height:320px;overflow:hidden;position:relative;background:var(--ash);">
+        <img src="multimedia/photo-temple-elder.jpg" alt="Elder at ancient temple" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,9,0.8) 0%,transparent 50%);pointer-events:none;"></div>
+        <p style="position:absolute;bottom:1.1rem;left:1.1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(242,237,228,0.8);margin:0;">Pashupatinath &nbsp;·&nbsp; Temple</p>
+      </div>
+<div style="flex-shrink:0;width:320px;height:320px;overflow:hidden;position:relative;background:var(--ash);">
+        <img src="multimedia/photo-chess-elders.jpg" alt="Two elders playing chess" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,9,0.8) 0%,transparent 50%);pointer-events:none;"></div>
+        <p style="position:absolute;bottom:1.1rem;left:1.1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(242,237,228,0.8);margin:0;">Bhaktapur &nbsp;·&nbsp; Street</p>
+      </div>
+<div style="flex-shrink:0;width:320px;height:320px;overflow:hidden;position:relative;background:var(--ash);">
+        <img src="multimedia/photo-himalayan-reflection.jpg" alt="Himalayan peaks reflected" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,9,0.8) 0%,transparent 50%);pointer-events:none;"></div>
+        <p style="position:absolute;bottom:1.1rem;left:1.1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(242,237,228,0.8);margin:0;">Annapurna &nbsp;·&nbsp; Landscape</p>
+      </div>
+<div style="flex-shrink:0;width:320px;height:320px;overflow:hidden;position:relative;background:var(--ash);">
+        <img src="multimedia/photo-plane-over-city.jpg" alt="Plane over city wires" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,9,0.8) 0%,transparent 50%);pointer-events:none;"></div>
+        <p style="position:absolute;bottom:1.1rem;left:1.1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(242,237,228,0.8);margin:0;">Kathmandu &nbsp;·&nbsp; Urban</p>
+      </div>
+<div style="flex-shrink:0;width:320px;height:320px;overflow:hidden;position:relative;background:var(--ash);">
+        <img src="multimedia/photo-street-mural.jpg" alt="Man before street mural" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,9,0.8) 0%,transparent 50%);pointer-events:none;"></div>
+        <p style="position:absolute;bottom:1.1rem;left:1.1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(242,237,228,0.8);margin:0;">Kathmandu &nbsp;·&nbsp; Street</p>
+      </div>
+    </div>
+
+
+    <!-- Cinematic fade edges -->
+    <div style="position:absolute;top:0;left:0;width:120px;height:100%;background:linear-gradient(to right,var(--black),transparent);pointer-events:none;z-index:2;"></div>
+    <div style="position:absolute;top:0;right:0;width:120px;height:100%;background:linear-gradient(to left,var(--black),transparent);pointer-events:none;z-index:2;"></div>
+  </div>
+
+  <style>
+    @keyframes photoLoop {
+      0%   { transform: translateX(0px); }
+      100% { transform: translateX(-2352px); }
+    }
+    #photoStrip:hover { animation-play-state: paused; }
+  </style>
+</section>
+
+<!-- CLIENTS -->
+<section class="clients" style="background:var(--black);padding:6rem 4rem;border-top:1px solid rgba(255,255,255,0.04);">
+  <p class="reveal" style="font-family:var(--sans);font-size:0.9rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--cream);text-align:center;margin-bottom:4rem;">Worked With</p>
+
+  <!-- Row 1 — 3 logos -->
+  <div class="reveal" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:660px;margin:0 auto 12px;">
+    <div style="
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:1.5rem 2rem;
+        background:rgba(255,255,255,0.06);
+        border:1px solid rgba(255,255,255,0.08);
+        border-radius:4px;
+        transition:background 0.3s, border-color 0.3s, transform 0.3s;
+      " onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='rgba(200,82,42,0.4)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.08)';this.style.transform='translateY(0)'">
+        <img src="multimedia/logo-samson.jpg" alt="Samson Film Production" title="Samson Film Production" style="max-height:46px;max-width:130px;width:auto;object-fit:contain;display:block;"/>
+      </div>
+    <div style="
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:1.5rem 2rem;
+        background:rgba(255,255,255,0.06);
+        border:1px solid rgba(255,255,255,0.08);
+        border-radius:4px;
+        transition:background 0.3s, border-color 0.3s, transform 0.3s;
+      " onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='rgba(200,82,42,0.4)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.08)';this.style.transform='translateY(0)'">
+        <img src="multimedia/logo-rp-production.jpg" alt="RP Production" title="RP Production" style="max-height:46px;max-width:130px;width:auto;object-fit:contain;display:block;"/>
+      </div>
+    <div style="
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:1.5rem 2rem;
+        background:rgba(255,255,255,0.06);
+        border:1px solid rgba(255,255,255,0.08);
+        border-radius:4px;
+        transition:background 0.3s, border-color 0.3s, transform 0.3s;
+      " onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='rgba(200,82,42,0.4)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.08)';this.style.transform='translateY(0)'">
+        <img src="multimedia/logo-the-jatra.jpg" alt="The Jatra" title="The Jatra" style="max-height:46px;max-width:130px;width:auto;object-fit:contain;display:block;"/>
+      </div>
+  </div>
+
+  <!-- Row 2 — 4 logos -->
+  <div class="reveal" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:660px;margin:0 auto;">
+    <div style="
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:1.5rem 2rem;
+        background:rgba(255,255,255,0.06);
+        border:1px solid rgba(255,255,255,0.08);
+        border-radius:4px;
+        transition:background 0.3s, border-color 0.3s, transform 0.3s;
+      " onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='rgba(200,82,42,0.4)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.08)';this.style.transform='translateY(0)'">
+        <img src="multimedia/logo-g21-digital.jpg" alt="G21 Digital" title="G21 Digital" style="max-height:46px;max-width:130px;width:auto;object-fit:contain;display:block;"/>
+      </div>
+    <div style="
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:1.5rem 2rem;
+        background:rgba(255,255,255,0.06);
+        border:1px solid rgba(255,255,255,0.08);
+        border-radius:4px;
+        transition:background 0.3s, border-color 0.3s, transform 0.3s;
+      " onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='rgba(200,82,42,0.4)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.08)';this.style.transform='translateY(0)'">
+        <img src="multimedia/logo-underexpose.jpg" alt="Underexpose Productions" title="Underexpose Productions" style="max-height:46px;max-width:130px;width:auto;object-fit:contain;display:block;"/>
+      </div>
+    <div style="
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:1.5rem 2rem;
+        background:rgba(255,255,255,0.06);
+        border:1px solid rgba(255,255,255,0.08);
+        border-radius:4px;
+        transition:background 0.3s, border-color 0.3s, transform 0.3s;
+      " onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='rgba(200,82,42,0.4)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.08)';this.style.transform='translateY(0)'">
+        <img src="multimedia/logo-noora-health.jpg" alt="Noora Health" title="Noora Health" style="max-height:46px;max-width:130px;width:auto;object-fit:contain;display:block;"/>
+      </div>
+    <div style="
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:1.5rem 2rem;
+        background:rgba(255,255,255,0.06);
+        border:1px solid rgba(255,255,255,0.08);
+        border-radius:4px;
+        transition:background 0.3s, border-color 0.3s, transform 0.3s;
+      " onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='rgba(200,82,42,0.4)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.08)';this.style.transform='translateY(0)'">
+        <img src="multimedia/logo-kathmandu-boutique.jpg" alt="Kathmandu Boutique" title="Kathmandu Boutique" style="max-height:46px;max-width:130px;width:auto;object-fit:contain;display:block;"/>
+      </div>
+  </div>
+</section>
+
+<!-- CURRENTLY WORKING -->
+<section style="background:var(--ash);padding:8rem 4rem;position:relative;overflow:hidden;" id="current">
+
+  <!-- Timeline background -->
+  <div aria-hidden="true" style="position:absolute;inset:-12px;background-image:url('multimedia/timeline-bg.png');background-size:cover;background-position:center;filter:blur(2.5px) brightness(0.85) saturate(0.95);opacity:0.62;pointer-events:none;"></div>
+  <div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(to bottom,var(--black) 0%,rgba(10,10,9,0.55) 14%,rgba(26,25,22,0.35) 34%,rgba(26,25,22,0.35) 78%,var(--ash) 100%),linear-gradient(to right,rgba(26,25,22,0.55) 0%,transparent 60%);pointer-events:none;"></div>
+
+  <div class="reveal" style="margin-bottom:3rem;position:relative;z-index:1;">
+    <div class="section-label" style="margin-bottom:0;">Currently Working</div>
+  </div>
+
+  <div class="kn-row" style="display:flex;align-items:center;gap:3.5rem;flex-wrap:wrap;position:relative;z-index:1;">
+
+    <!-- Khanal Niwas<!-- Khanal Niwas — static -->
+    <a class="kn-card" href="https://www.instagram.com/khanal_niwaas/" target="_blank" rel="noopener" aria-label="Khanal Niwas on Instagram" style="display:block;cursor:none;text-decoration:none;width:min(360px,100%);flex-shrink:0;border:1px solid rgba(255,255,255,0.08);overflow:hidden;">
+      <div style="aspect-ratio:4/5;overflow:hidden;">
+        <img src="multimedia/khanal-niwas-poster.jpg" alt="Khanal Niwas" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;filter:brightness(0.85) saturate(0.95);"/>
+      </div>
+    </a>
+    <div class="kn-info" style="max-width:26rem;">
+      <p style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:0.9rem;">Web Series &nbsp;·&nbsp; Editor</p>
+      <h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:2.6rem;line-height:1.05;color:var(--cream);margin-bottom:0.8rem;">Khanal Niwas</h3>
+      <p style="font-family:var(--mono);font-size:0.62rem;color:var(--light-mist);letter-spacing:0.08em;margin-bottom:1.6rem;">Dir. Ganesh Tiwari &nbsp;·&nbsp; Paper Cat Films</p>
+      <div style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.45rem 0.9rem;border:1px solid rgba(184,149,90,0.5);background:rgba(10,10,9,0.55);margin-bottom:2rem;">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block;animation:pulseDot 1.5s ease-in-out infinite;"></span>
+        <span style="font-family:var(--mono);font-size:0.52rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--cream);">In Post-Production</span>
+      </div>
+      <div>
+        <a class="cta-btn" href="https://www.instagram.com/khanal_niwaas/" target="_blank" rel="noopener" style="margin-top:0;">Follow on Instagram ↗</a>
+      </div>
+    </div>
+
+  </div>
+
+  <style>
+    .kn-card { transition: border-color 0.4s, box-shadow 0.4s; }
+    .kn-card img { transition: transform 0.8s cubic-bezier(0.2,0.7,0.2,1); }
+    .kn-card:hover { border-color: rgba(200,82,42,0.6); box-shadow: 0 0 40px rgba(200,82,42,0.18); }
+    .kn-card:hover img { transform: scale(1.03); }
+    @keyframes pulseDot {
+      0%, 100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.4; transform:scale(1.4); }
+    }
+  </style>
+
+</section>
+
+<!-- EDUCATION -->
+<section style="background:var(--ash);padding:7rem 4rem;">
+  <div style="max-width:900px;margin:0 auto;">
+
+    <!-- Section title styled exactly like Selected Work -->
+    <div class="reveal" style="margin-bottom:3rem;">
+      <div class="section-label" style="margin-bottom:0;">Academic Background</div>
+    </div>
+
+    <!-- Two columns -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+
+      <!-- Bachelor -->
+      <div class="reveal" style="background:var(--black);padding:3rem;text-align:center;border:1px solid rgba(255,255,255,0.04);transition:border-color 0.4s;" onmouseover="this.style.borderColor='rgba(200,82,42,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.04)'">
+        <p style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.35em;text-transform:uppercase;color:var(--mist);margin-bottom:2rem;">Bachelor's Degree</p>
+        <div style="width:24px;height:1px;background:var(--ember);margin:0 auto 2rem;"></div>
+        <h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:2.4rem;line-height:1.1;color:var(--cream);margin-bottom:0.2rem;">Film</h3>
+        <h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:2.4rem;line-height:1.1;font-style:italic;color:var(--gold);margin-bottom:2rem;">Studies</h3>
+        <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1rem;color:var(--light-mist);font-weight:300;margin-bottom:0.4rem;">Oscar International College, Nepal</p>
+        <p style="font-family:var(--mono);font-size:0.58rem;color:var(--ember);letter-spacing:0.2em;">2021</p>
+      </div>
+
+      <!-- Master -->
+      <div class="reveal" style="background:var(--black);padding:3rem;text-align:center;border:1px solid rgba(255,255,255,0.04);transition:border-color 0.4s;" onmouseover="this.style.borderColor='rgba(200,82,42,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.04)'">
+        <p style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.35em;text-transform:uppercase;color:var(--mist);margin-bottom:2rem;">Master's Degree</p>
+        <div style="width:24px;height:1px;background:var(--ember);margin:0 auto 2rem;"></div>
+        <h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:2.4rem;line-height:1.1;color:var(--cream);margin-bottom:0.2rem;">Mass Media</h3>
+        <h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:2.4rem;line-height:1.1;font-style:italic;color:var(--gold);margin-bottom:2rem;">Technology</h3>
+        <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1rem;color:var(--light-mist);font-weight:300;margin-bottom:0.4rem;">Shepherd International College, Nepal</p>
+        <p style="font-family:var(--mono);font-size:0.58rem;color:var(--ember);letter-spacing:0.2em;">2025</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact-bg-text">Let's Work</div>
+  <div class="contact-inner">
+    <p class="contact-eyebrow">Get in touch</p>
+    <h2 class="contact-title">If you have any<br>idea in your head,<br><em style="font-style:italic;color:var(--gold);">Let's talk</em></h2>
+
+    <div class="contact-links">
+      <a href="mailto:bikenkarki60@gmail.com" class="contact-link">
+        <div>
+          <p class="contact-link-label">Email</p>
+          <p class="contact-link-value">bikenkarki60@gmail.com</p>
+        </div>
+        <span class="contact-link-arrow">→</span>
+      </a>
+      <a href="https://www.instagram.com/krkbiken__/" class="contact-link" target="_blank">
+        <div>
+          <p class="contact-link-label">Instagram</p>
+          <p class="contact-link-value">@krkbiken__</p>
+        </div>
+        <span class="contact-link-arrow">→</span>
+      </a>
+      <a href="tel:+9779817312748" class="contact-link">
+        <div>
+          <p class="contact-link-label">Phone</p>
+          <p class="contact-link-value">+977 9817312748</p>
+        </div>
+        <span class="contact-link-arrow">→</span>
+      </a>
+      <a href="#" class="contact-link">
+        <div>
+          <p class="contact-link-label">Location</p>
+          <p class="contact-link-value">Sinamangal, Kathmandu, Nepal</p>
+        </div>
+        <span class="contact-link-arrow">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Biken Karki</div>
+  <p class="footer-copy">© 2025 Biken Karki. All rights reserved.</p>
+  <div class="footer-socials">
+    <a href="https://www.instagram.com/krkbiken__/" target="_blank">Instagram</a>
+    <a href="mailto:bikenkarki60@gmail.com">Gmail</a>
+    <a href="tel:+9779817312748">+977 9817312748</a>
+  </div>
+</footer>
+
+<script>
+  // Remove letterbox on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('ltop').classList.remove('open');
+      document.getElementById('lbottom').classList.remove('open');
+    }, 800);
+  });
+
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  const animRing = () => {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animRing);
+  };
+  animRing();
+
+  // Hover effects on interactive elements
+  document.querySelectorAll('a, button, .project-card, .service-item, .stat-box').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'translate(-50%, -50%) scale(2)';
+      ring.style.width = '60px';
+      ring.style.height = '60px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+      ring.style.width = '36px';
+      ring.style.height = '36px';
+    });
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 100);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+
+
+
+
+
+  // Animated number counter — rolls once only on first scroll into view
+  function startCounter(el) {
+    const target = parseInt(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const duration = 2500;
+    const interval = Math.floor(duration / target);
+    let current = 1;
+    el.textContent = current + suffix;
+    const timer = setInterval(() => {
+      current++;
+      el.textContent = current + suffix;
+      if (current >= target) {
+        el.textContent = target + suffix;
+        clearInterval(timer);
+      }
+    }, interval);
+  }
+
+  const countEls = document.querySelectorAll('.count-num');
+  const countObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        startCounter(entry.target);
+        countObserver.unobserve(entry.target); // only once
+      }
+    });
+  }, { threshold: 0.5 });
+  countEls.forEach(el => countObserver.observe(el));
+
+
+  // Cycling thumbnails — slow cinematic push-in, 8s per frame, soft crossfade while the push continues
+  document.querySelectorAll('.cycle-thumb').forEach(el => {
+    const thumbs = el.dataset.thumbs.split(/,(?=https?:|data:|multimedia\/)/);
+    if (thumbs.length < 2) return;
+
+    thumbs.forEach(src => { const img = new Image(); img.src = src; });
+
+    const HOLD = 8000;      // time each frame is on screen before the next begins to appear
+    const FADE = 1600;      // crossfade length
+    const ZOOM = 1.14;      // end scale of the push-in
+    const DUR  = HOLD + FADE;
+
+    const layer2 = document.createElement('div');
+    layer2.style.cssText = 'position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;will-change:transform,opacity;';
+    el.parentNode.insertBefore(layer2, el.nextSibling);
+    el.style.willChange = 'transform,opacity';
+
+    const layers = [el, layer2];
+    let cur = 0, idx = 0;
+
+    function start(layer, fadeIn) {
+      layer.style.transition = 'none';
+      layer.style.transform = 'scale(1)';
+      layer.style.opacity = fadeIn ? '0' : '1';
+      void layer.offsetWidth;
+      layer.style.transition = `transform ${DUR}ms linear, opacity ${FADE}ms ease-in-out`;
+      layer.style.transform = `scale(${ZOOM})`;
+      layer.style.opacity = '1';
+    }
+
+    start(el, false);
+
+    setInterval(() => {
+      const old = layers[cur];
+      const next = layers[1 - cur];
+      idx = (idx + 1) % thumbs.length;
+      next.style.transition = 'none';
+      next.style.backgroundImage = `url('${thumbs[idx]}')`;
+      old.parentNode.insertBefore(next, old.nextSibling);   // incoming layer sits on top
+      start(next, true);
+      cur = 1 - cur;
+    }, HOLD);
+  });
+
+  // UE Session dropdown
+  function toggleUE(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('ueDropdown');
+    const arrow    = document.getElementById('ueArrow');
+    const isOpen   = dropdown.style.maxHeight !== '0px' && dropdown.style.maxHeight !== '';
+    if (isOpen) {
+      dropdown.style.maxHeight = '0px';
+      dropdown.style.opacity   = '0';
+      arrow.style.transform    = 'rotate(0deg)';
+    } else {
+      dropdown.style.maxHeight = '600px';
+      dropdown.style.opacity   = '1';
+      arrow.style.transform    = 'rotate(180deg)';
+    }
+  }
+
+  // Close UE dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#ueCard') && !e.target.closest('#ueDropdown')) {
+      const dropdown = document.getElementById('ueDropdown');
+      const arrow    = document.getElementById('ueArrow');
+      if (dropdown) {
+        dropdown.style.maxHeight = '0px';
+        dropdown.style.opacity   = '0';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+      }
+    }
+  });
+
+  // DIT dropdown
+  function toggleDIT(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('ditDropdown');
+    const arrow    = document.getElementById('ditArrow');
+    const isOpen   = dropdown.style.maxHeight !== '0px' && dropdown.style.maxHeight !== '';
+    if (isOpen) {
+      dropdown.style.maxHeight = '0px';
+      dropdown.style.opacity   = '0';
+      arrow.style.transform    = 'rotate(0deg)';
+    } else {
+      dropdown.style.maxHeight = '500px';
+      dropdown.style.opacity   = '1';
+      arrow.style.transform    = 'rotate(180deg)';
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#ditCard') && !e.target.closest('#ditDropdown')) {
+      const dropdown = document.getElementById('ditDropdown');
+      const arrow    = document.getElementById('ditArrow');
+      if (dropdown) {
+        dropdown.style.maxHeight = '0px';
+        dropdown.style.opacity   = '0';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+      }
+    }
+  });
+
+  // DIT dropdown
+  function toggleDIT(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('ditDropdown');
+    const arrow    = document.getElementById('ditArrow');
+    const isOpen   = dropdown.style.maxHeight !== '0px' && dropdown.style.maxHeight !== '';
+    if (isOpen) {
+      dropdown.style.maxHeight = '0px';
+      dropdown.style.opacity   = '0';
+      arrow.style.transform    = 'rotate(0deg)';
+    } else {
+      dropdown.style.maxHeight = '500px';
+      dropdown.style.opacity   = '1';
+      arrow.style.transform    = 'rotate(180deg)';
+    }
+  }
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#ditCard') && !e.target.closest('#ditDropdown')) {
+      const dropdown = document.getElementById('ditDropdown');
+      const arrow    = document.getElementById('ditArrow');
+      if (dropdown) {
+        dropdown.style.maxHeight = '0px';
+        dropdown.style.opacity   = '0';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+      }
+    }
+  });
+
+  // Other Projects dropdown
+  function toggleOther(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('otherDropdown');
+    const arrow    = document.getElementById('otherArrow');
+    const isOpen   = dropdown.style.maxHeight !== '0px' && dropdown.style.maxHeight !== '';
+    if (isOpen) {
+      dropdown.style.maxHeight = '0px';
+      dropdown.style.opacity   = '0';
+      arrow.style.transform    = 'rotate(0deg)';
+    } else {
+      dropdown.style.maxHeight = '600px';
+      dropdown.style.opacity   = '1';
+      arrow.style.transform    = 'rotate(180deg)';
+    }
+  }
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#otherCard') && !e.target.closest('#otherDropdown')) {
+      const d = document.getElementById('otherDropdown');
+      const a = document.getElementById('otherArrow');
+      if (d) { d.style.maxHeight='0px'; d.style.opacity='0'; }
+      if (a) a.style.transform='rotate(0deg)';
+    }
+  });
+
+  function toggleCinema(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('cinemaDropdown');
+    const arrow    = document.getElementById('cinemaArrow');
+    const isOpen   = dropdown.style.maxHeight !== '0px' && dropdown.style.maxHeight !== '';
+    if (isOpen) {
+      dropdown.style.maxHeight = '0px';
+      dropdown.style.opacity   = '0';
+      arrow.style.transform    = 'rotate(0deg)';
+    } else {
+      dropdown.style.maxHeight = '600px';
+      dropdown.style.opacity   = '1';
+      arrow.style.transform    = 'rotate(180deg)';
+    }
+  }
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#cinemaCard') && !e.target.closest('#cinemaDropdown')) {
+      const d = document.getElementById('cinemaDropdown');
+      const a = document.getElementById('cinemaArrow');
+      if (d) { d.style.maxHeight='0px'; d.style.opacity='0'; }
+      if (a) a.style.transform='rotate(0deg)';
+    }
+  });
+
+  // Documentaries dropdown
+  function toggleDocs(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('docsDropdown');
+    const arrow    = document.getElementById('docsArrow');
+    const isOpen   = dropdown.style.maxHeight !== '0px' && dropdown.style.maxHeight !== '';
+    if (isOpen) {
+      dropdown.style.maxHeight = '0px';
+      dropdown.style.opacity   = '0';
+      arrow.style.transform    = 'rotate(0deg)';
+    } else {
+      dropdown.style.maxHeight = '400px';
+      dropdown.style.opacity   = '1';
+      arrow.style.transform    = 'rotate(180deg)';
+    }
+  }
+
+  // Close docs dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#docsCard') && !e.target.closest('#docsDropdown')) {
+      const dropdown = document.getElementById('docsDropdown');
+      const arrow    = document.getElementById('docsArrow');
+      if (dropdown) {
+        dropdown.style.maxHeight = '0px';
+        dropdown.style.opacity   = '0';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+      }
+    }
+  });
+
+  // Music Videos dropdown
+  function toggleMusic(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('musicDropdown');
+    const arrow    = document.getElementById('musicArrow');
+    const isOpen   = dropdown.style.maxHeight !== '0px' && dropdown.style.maxHeight !== '';
+    if (isOpen) {
+      dropdown.style.maxHeight = '0px';
+      dropdown.style.opacity   = '0';
+      arrow.style.transform    = 'rotate(0deg)';
+    } else {
+      dropdown.style.maxHeight = '600px';
+      dropdown.style.opacity   = '1';
+      arrow.style.transform    = 'rotate(180deg)';
+    }
+  }
+
+  // Close music dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#musicCard') && !e.target.closest('#musicDropdown')) {
+      const dropdown = document.getElementById('musicDropdown');
+      const arrow    = document.getElementById('musicArrow');
+      if (dropdown) {
+        dropdown.style.maxHeight = '0px';
+        dropdown.style.opacity   = '0';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+      }
+    }
+  });
+
+  // Teen Spirit dropdown
+  function toggleTeenSpirit(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('teenSpiritDropdown');
+    const arrow    = document.getElementById('teenSpiritArrow');
+    const isOpen   = dropdown.style.maxHeight !== '0px' && dropdown.style.maxHeight !== '';
+    if (isOpen) {
+      dropdown.style.maxHeight = '0px';
+      dropdown.style.opacity   = '0';
+      arrow.style.transform    = 'rotate(0deg)';
+    } else {
+      dropdown.style.maxHeight = '400px';
+      dropdown.style.opacity   = '1';
+      arrow.style.transform    = 'rotate(180deg)';
+    }
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#teenSpiritCard') && !e.target.closest('#teenSpiritDropdown')) {
+      const dropdown = document.getElementById('teenSpiritDropdown');
+      const arrow    = document.getElementById('teenSpiritArrow');
+      if (dropdown) {
+        dropdown.style.maxHeight = '0px';
+        dropdown.style.opacity   = '0';
+        arrow.style.transform    = 'rotate(0deg)';
+      }
+    }
+    // Episode row click → open lightbox
+    const row = e.target.closest('.ep-row');
+    if (row) {
+      e.stopPropagation();
+      openLightbox(row.dataset.vid);
+    }
+  });
+
+  // Lightbox
+  function openLightbox(videoId) {
+    const lb = document.getElementById('lightbox');
+    const iframe = document.getElementById('lightbox-iframe');
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+    lb.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    const lb = document.getElementById('lightbox');
+    const iframe = document.getElementById('lightbox-iframe');
+    lb.classList.remove('active');
+    iframe.src = '';
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 80) {
+      nav.style.background = 'rgba(10,10,9,0.92)';
+      nav.style.backdropFilter = 'blur(12px)';
+      nav.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+    } else {
+      nav.style.background = 'transparent';
+      nav.style.backdropFilter = 'none';
+      nav.style.borderBottom = 'none';
+    }
+  });
+</script>
+</body>
+</html>
